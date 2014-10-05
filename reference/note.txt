@@ -1,0 +1,1 @@
+﻿đọc thuật toán FCM, sau đó tìm hiểu thuật toán đồng phân cụm. (co-clustering)
