@@ -17,29 +17,29 @@ namespace FCCIAlgorithm
 		{
 			Random random = new Random();
 			Console.WriteLine("Hello World!");
-			int C = 3;
-			int N = 5;
+			int C = 5;
+			int N = 500;
 			int K = 2;
 			double[,] x = new double[N,K];
 			for (int i = 0; i < N; i++) {
 				for (int j = 0; j < K; j++) {
-					x[i,j] = random.NextDouble();
+					x[i,j] = random.NextDouble()*255;
 				}
 			}
-			FCCI(1,1,1,100,C,K,N,x);
+			FCCI(10,9*Math.Pow(10,5),Math.Pow(10,-2),100,C,K,N,x);
 			
 			Console.Write("Press any key to continue . . . ");
 			Console.ReadKey(true);
 		}
 		
-		public static void FCCI(double Tu,double Tv,float eps,int maxIter,int C,int K,int N,double[,] x){
+		public static void FCCI(double Tu,double Tv,double eps,int maxIter,int C,int K,int N,double[,] x){
 			Random random = new Random();
 			double[,] U = new double[C,N];
 			double[,] P = new double[C,K];
 			double[,] V = new double[C,K];
 			double[] sum = new double[N];
 			double[,,] D = new double[C,N,K];
-			List<double[,]> lsU = new List<double[,]>();
+			double[,] preU = new double[C,N];
 			//Initialize uci such that 0≤uci≤1
 			for (int c = 0; c < C; c++) {
 				for (int i = 0; i < N; i++) {
@@ -61,15 +61,34 @@ namespace FCCIAlgorithm
 				for (int c = 0; c < C; c++) {
 					sum2 +=U[c,i];
 				}
-				Console.WriteLine(sum2);
+				Console.WriteLine("Total U with i="+ i +" = " +sum2);
 				sum2 = 0;
 			}
 			//
-			lsU.Add(U);
-			
+			Console.WriteLine("U(0) === ");
+			for (int i = 0; i < N; i++) {
+				for (int c = 0; c < C; c++) {
+					Console.Write(U[c,i] + " " );
+				}
+			}
+			Console.WriteLine();
 			int count = 0;
+			//save preU
+			for (int i = 0; i < N; i++) {
+				for (int c = 0; c < C; c++) {
+					preU[c,i] = U[c,i];
+				}
+			}
+			
 			
 			while(true){
+				//save preU
+				for (int i = 0; i < N; i++) {
+					for (int c = 0; c < C; c++) {
+						preU[c,i] = U[c,i];
+					}
+				}
+				
 				//Calculate pcj using(13)
 				for (int c = 0; c < C; c++) {
 					for (int j = 0; j < K; j++) {
@@ -87,64 +106,90 @@ namespace FCCIAlgorithm
 				for (int c = 0; c < C; c++) {
 					for (int i = 0; i < N; i++) {
 						for (int j = 0; j < K; j++) {
-							D[c,i,j] = Math.Pow(x[i,j] - P[c,j],2);
+							D[c,i,j] = Math.Pow((x[i,j] - P[c,j]),2);
 						}
 					}
 				}
 				//Calculate vcj using (11)
-				double[,] upDivForV = new double[C,K];
-				double[,] downDivForV = new double[C,K];
+				double totalVc = 0;
 				for (int c = 0; c < C; c++) {
 					for (int j = 0; j < K; j++) {
-						
 						double pow = 0;
 						for (int i = 0; i < N; i++) {
 							pow-=(U[c,i]*D[c,i,j]/Tv);
 						}
-						upDivForV[c,j] = Math.Exp(pow);
-						downDivForV[c,j]+=upDivForV[c,j];
+						V[c,j] = Math.Exp(pow);
+						totalVc+=V[c,j];
 					}
+					
+					for (int j = 0; j < K; j++) {
+						V[c,j] = V[c,j]/totalVc;
+					}
+					totalVc = 0;
 				}
 				
+				double totalVcj = 0;
 				for (int c = 0; c < C; c++) {
 					for (int j = 0; j < K; j++) {
-						V[c,j] = upDivForV[c,j]/downDivForV[c,j];
+						totalVcj+=V[c,j];
 					}
+					Console.WriteLine("Total V with c= "+c+" : " +totalVcj);
+					totalVcj = 0;
 				}
 				
 				//Calculate uci using (9)
-				
-				double[,] upDivForU = new double[C,N];
-				double[,] downDivForU = new double[C,N];
-				for (int c = 0; c < C; c++) {
-					for (int i = 0; i < N; i++) {
+				double totalUk=0;
+				for (int i = 0;i < N; i++) {
+					for (int c = 0; c < C; c++) {
 						double pow = 0;
 						for (int j = 0; j < K; j++) {
 							pow-=(V[c,j]*D[c,i,j]/Tu);
 						}
-						upDivForU[c,i] = Math.Exp(pow);
-						downDivForU[c,i]+=upDivForU[c,i];
+						U[c,i] = Math.Exp(pow);
+						totalUk+=	U[c,i];
 					}
 					
-					for (int i = 0; i < N; i++) {
-						U[c,i] = upDivForU[c,i]/downDivForU[c,i];
+					for (int c = 0; c < C; c++) {
+						U[c,i] =U[c,i]/totalUk;
+						if(Double.IsNaN(U[c,i])){
+							U[c,i] = 0;
+						}
 					}
+					totalUk=0;
+				}
+				double totalUkCheck = 0;
+				
+				for (int i = 0;i < N; i++) {
+					for (int c = 0; c < C; c++) {
+						totalUkCheck +=U[c,i];
+					}
+					Console.WriteLine("Total U with i= "+i+" : " +totalUkCheck);
+					totalUkCheck = 0;
 				}
 				
-				//check again
-				sum2 = 0;
+				
+				count++;
+				Console.WriteLine( "U( "+count+")===");
 				for (int i = 0; i < N; i++) {
 					for (int c = 0; c < C; c++) {
-						sum2 +=U[c,i];
+						Console.Write(U[c,i] + " " );
 					}
-					Console.WriteLine(sum2);
-					sum2 = 0;
 				}
-				//
-				count++;
-				lsU.Add(U);
+				Console.WriteLine();
+				double maxEps = 0;
+				for (int c = 0; c < C; c++) {
+					for (int i = 0; i < N; i++) {
+						double compare = Math.Abs(U[c,i]-preU[c,i]);
+						Console.WriteLine(c+" --" + i + "---" + U[c,i] + " -- " + preU[c,i] + " --- " +compare + " -- "+ "Max eps = " + maxEps);
+						
+						if(compare >= maxEps){
+							maxEps = Math.Abs(U[c,i]-preU[c,i]);
+						}
+					}
+				}
 				
-				if((Math.Abs(1) <=eps) || count== maxIter){
+				if((maxEps <=eps) || count== maxIter){
+					Console.WriteLine("finish count = " + count);
 					break;
 				}
 			}
