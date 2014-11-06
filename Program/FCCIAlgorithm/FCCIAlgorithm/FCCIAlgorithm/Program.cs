@@ -17,8 +17,8 @@ namespace FCCIAlgorithm
 		{
 			Random random = new Random();
 			Console.WriteLine("Hello World!");
-			int C = 5;
-			int N = 500;
+			int C = 2;
+			int N = 5;
 			int K = 2;
 			double[,] x = new double[N,K];
 			for (int i = 0; i < N; i++) {
@@ -193,6 +193,67 @@ namespace FCCIAlgorithm
 					break;
 				}
 			}
+			Console.WriteLine("=====================================");
+			Console.WriteLine("Final Uci(C,N) : ") ;
+			printMatrix(U);
+			Console.WriteLine();
+			Console.WriteLine("=====================================");
+			Console.WriteLine("Final Pcj (C,K) : ") ;
+			printMatrix(P);
+			
+			
+			double Snew = XieBeniClusterValidity(U,x,P,C,K,N);
+			Console.WriteLine(Snew);
 		}
+		
+		public static void printMatrix(double[,] arr){
+			int rowLength = arr.GetLength(0);
+			int colLength = arr.GetLength(1);
+
+			for (int i = 0; i < rowLength; i++)
+			{
+				for (int j = 0; j < colLength; j++)
+				{
+					Console.Write(string.Format("{0} ", arr[i, j]));
+				}
+				Console.Write(Environment.NewLine + Environment.NewLine);
+			}
+		}
+		
+		public static double XieBeniClusterValidity(double[,] U,double[,] x,double[,] P,int C,int K,int N)
+		{
+			double S=0;
+			double xigma = 0;
+			double xigmaCompare = 0;
+			for (int c = 0; c < C; c++) {
+				for (int i = 0; i < N; i++) {
+					double totalXp = 0;
+					for (int j = 0; j < K; j++) {
+						totalXp+=Math.Pow((x[i,j]-P[c,j]),2);
+					}
+					xigmaCompare = U[c,i]*U[c,i]*totalXp;
+					if(xigmaCompare > xigma ) xigma = xigmaCompare;
+				}
+			}
+			
+			double dmin = 100;
+			for (int c = 0; c < C; c++) {
+				double dminCompare = 0;
+				for (int j = 0; j < K; j++) {
+					if((c+1)<C){
+						dminCompare+=Math.Pow(P[c+1,j]-P[c,j],2);
+					}else{
+						dminCompare+=Math.Pow(P[0,j]-P[c,j],2);
+					}
+				}
+				if(dminCompare < dmin ){
+					dmin =dminCompare;
+				}
+			}
+			
+			S = xigma/N/(Math.Pow(dmin,2));
+			return S;
+		}
+		
 	}
 }
