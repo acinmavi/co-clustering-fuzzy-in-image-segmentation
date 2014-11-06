@@ -1,0 +1,5 @@
+C:\Users\BT\Documents\SharpDevelop Projects\FCCIAlgorithm\FCCIAlgorithm\bin\Debug\FCCIAlgorithm.exe
+C:\Users\BT\Documents\SharpDevelop Projects\FCCIAlgorithm\FCCIAlgorithm\bin\Debug\FCCIAlgorithm.pdb
+C:\Users\BT\Documents\SharpDevelop Projects\FCCIAlgorithm\FCCIAlgorithm\obj\Debug\FCCIAlgorithm.csprojResolveAssemblyReference.cache
+C:\Users\BT\Documents\SharpDevelop Projects\FCCIAlgorithm\FCCIAlgorithm\obj\Debug\FCCIAlgorithm.exe
+C:\Users\BT\Documents\SharpDevelop Projects\FCCIAlgorithm\FCCIAlgorithm\obj\Debug\FCCIAlgorithm.pdb
