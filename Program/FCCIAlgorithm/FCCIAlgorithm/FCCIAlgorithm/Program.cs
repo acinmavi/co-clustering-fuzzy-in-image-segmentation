@@ -8,6 +8,7 @@
  */
 using System;
 using System.Collections.Generic;
+using System.IO;
 
 namespace FCCIAlgorithm
 {
@@ -18,7 +19,7 @@ namespace FCCIAlgorithm
 			Random random = new Random();
 			Console.WriteLine("Hello World!");
 			int C = 2;
-			int N = 5;
+			int N = 2;
 			int K = 2;
 			double[,] x = new double[N,K];
 			for (int i = 0; i < N; i++) {
@@ -26,234 +27,25 @@ namespace FCCIAlgorithm
 					x[i,j] = random.NextDouble()*255;
 				}
 			}
-			FCCI(10,9*Math.Pow(10,5),Math.Pow(10,-2),100,C,K,N,x);
+			FCCIAlgorithm.runAlgorithm(10,9*Math.Pow(10,5),Math.Pow(10,-2),100,C,K,N,x);
+			
+			
+			Console.WriteLine("==============REAL IMAGE====================");
+			string fileName = "cat.jpg";
+			fileName = Path.Combine(Environment.CurrentDirectory,fileName);
+			double[,] input = ColorSpaceHelper.get2dDataArrayFromImage(fileName);
+			C=3;
+			K=2;
+			N = input.GetLength(0);
+			FCCIAlgorithm.runAlgorithm(10,9*Math.Pow(10,5),Math.Pow(10,-2),100,C,K,N,input);
 			
 			Console.Write("Press any key to continue . . . ");
 			Console.ReadKey(true);
 		}
 		
-		public static void FCCI(double Tu,double Tv,double eps,int maxIter,int C,int K,int N,double[,] x){
-			Random random = new Random();
-			double[,] U = new double[C,N];
-			double[,] P = new double[C,K];
-			double[,] V = new double[C,K];
-			double[] sum = new double[N];
-			double[,,] D = new double[C,N,K];
-			double[,] preU = new double[C,N];
-			//Initialize uci such that 0≤uci≤1
-			for (int c = 0; c < C; c++) {
-				for (int i = 0; i < N; i++) {
-					U[c,i] = random.NextDouble();
-					sum[i]+=U[c,i];
-				}
-			}
-			
-			
-			for (int c = 0; c < C; c++) {
-				for (int i = 0; i < N; i++) {
-					U[c,i] = U[c,i]/sum[i];
-				}
-			}
-			
-			//check again
-			double sum2 = 0;
-			for (int i = 0; i < N; i++) {
-				for (int c = 0; c < C; c++) {
-					sum2 +=U[c,i];
-				}
-				Console.WriteLine("Total U with i="+ i +" = " +sum2);
-				sum2 = 0;
-			}
-			//
-			Console.WriteLine("U(0) === ");
-			for (int i = 0; i < N; i++) {
-				for (int c = 0; c < C; c++) {
-					Console.Write(U[c,i] + " " );
-				}
-			}
-			Console.WriteLine();
-			int count = 0;
-			//save preU
-			for (int i = 0; i < N; i++) {
-				for (int c = 0; c < C; c++) {
-					preU[c,i] = U[c,i];
-				}
-			}
-			
-			
-			while(true){
-				//save preU
-				for (int i = 0; i < N; i++) {
-					for (int c = 0; c < C; c++) {
-						preU[c,i] = U[c,i];
-					}
-				}
-				
-				//Calculate pcj using(13)
-				for (int c = 0; c < C; c++) {
-					for (int j = 0; j < K; j++) {
-						double up =0;
-						double down =0;
-						for (int i = 0; i < N; i++) {
-							down+=U[c,i];
-							up+=U[c,i]*x[i,j];
-						}
-						P[c,j] = up/down;
-					}
-				}
-				
-				//Calculate Dcij using(3)
-				for (int c = 0; c < C; c++) {
-					for (int i = 0; i < N; i++) {
-						for (int j = 0; j < K; j++) {
-							D[c,i,j] = Math.Pow((x[i,j] - P[c,j]),2);
-						}
-					}
-				}
-				//Calculate vcj using (11)
-				double totalVc = 0;
-				for (int c = 0; c < C; c++) {
-					for (int j = 0; j < K; j++) {
-						double pow = 0;
-						for (int i = 0; i < N; i++) {
-							pow-=(U[c,i]*D[c,i,j]/Tv);
-						}
-						V[c,j] = Math.Exp(pow);
-						totalVc+=V[c,j];
-					}
-					
-					for (int j = 0; j < K; j++) {
-						V[c,j] = V[c,j]/totalVc;
-					}
-					totalVc = 0;
-				}
-				
-				double totalVcj = 0;
-				for (int c = 0; c < C; c++) {
-					for (int j = 0; j < K; j++) {
-						totalVcj+=V[c,j];
-					}
-					Console.WriteLine("Total V with c= "+c+" : " +totalVcj);
-					totalVcj = 0;
-				}
-				
-				//Calculate uci using (9)
-				double totalUk=0;
-				for (int i = 0;i < N; i++) {
-					for (int c = 0; c < C; c++) {
-						double pow = 0;
-						for (int j = 0; j < K; j++) {
-							pow-=(V[c,j]*D[c,i,j]/Tu);
-						}
-						U[c,i] = Math.Exp(pow);
-						totalUk+=	U[c,i];
-					}
-					
-					for (int c = 0; c < C; c++) {
-						U[c,i] =U[c,i]/totalUk;
-						if(Double.IsNaN(U[c,i])){
-							U[c,i] = 0;
-						}
-					}
-					totalUk=0;
-				}
-				double totalUkCheck = 0;
-				
-				for (int i = 0;i < N; i++) {
-					for (int c = 0; c < C; c++) {
-						totalUkCheck +=U[c,i];
-					}
-					Console.WriteLine("Total U with i= "+i+" : " +totalUkCheck);
-					totalUkCheck = 0;
-				}
-				
-				
-				count++;
-				Console.WriteLine( "U( "+count+")===");
-				for (int i = 0; i < N; i++) {
-					for (int c = 0; c < C; c++) {
-						Console.Write(U[c,i] + " " );
-					}
-				}
-				Console.WriteLine();
-				double maxEps = 0;
-				for (int c = 0; c < C; c++) {
-					for (int i = 0; i < N; i++) {
-						double compare = Math.Abs(U[c,i]-preU[c,i]);
-						Console.WriteLine(c+" --" + i + "---" + U[c,i] + " -- " + preU[c,i] + " --- " +compare + " -- "+ "Max eps = " + maxEps);
-						
-						if(compare >= maxEps){
-							maxEps = Math.Abs(U[c,i]-preU[c,i]);
-						}
-					}
-				}
-				
-				if((maxEps <=eps) || count== maxIter){
-					Console.WriteLine("finish count = " + count);
-					break;
-				}
-			}
-			Console.WriteLine("=====================================");
-			Console.WriteLine("Final Uci(C,N) : ") ;
-			printMatrix(U);
-			Console.WriteLine();
-			Console.WriteLine("=====================================");
-			Console.WriteLine("Final Pcj (C,K) : ") ;
-			printMatrix(P);
-			
-			
-			double Snew = XieBeniClusterValidity(U,x,P,C,K,N);
-			Console.WriteLine(Snew);
-		}
 		
-		public static void printMatrix(double[,] arr){
-			int rowLength = arr.GetLength(0);
-			int colLength = arr.GetLength(1);
-
-			for (int i = 0; i < rowLength; i++)
-			{
-				for (int j = 0; j < colLength; j++)
-				{
-					Console.Write(string.Format("{0} ", arr[i, j]));
-				}
-				Console.Write(Environment.NewLine + Environment.NewLine);
-			}
-		}
 		
-		public static double XieBeniClusterValidity(double[,] U,double[,] x,double[,] P,int C,int K,int N)
-		{
-			double S=0;
-			double xigma = 0;
-			double xigmaCompare = 0;
-			for (int c = 0; c < C; c++) {
-				for (int i = 0; i < N; i++) {
-					double totalXp = 0;
-					for (int j = 0; j < K; j++) {
-						totalXp+=Math.Pow((x[i,j]-P[c,j]),2);
-					}
-					xigmaCompare = U[c,i]*U[c,i]*totalXp;
-					if(xigmaCompare > xigma ) xigma = xigmaCompare;
-				}
-			}
-			
-			double dmin = 100;
-			for (int c = 0; c < C; c++) {
-				double dminCompare = 0;
-				for (int j = 0; j < K; j++) {
-					if((c+1)<C){
-						dminCompare+=Math.Pow(P[c+1,j]-P[c,j],2);
-					}else{
-						dminCompare+=Math.Pow(P[0,j]-P[c,j],2);
-					}
-				}
-				if(dminCompare < dmin ){
-					dmin =dminCompare;
-				}
-			}
-			
-			S = xigma/N/(Math.Pow(dmin,2));
-			return S;
-		}
+		
 		
 	}
 }

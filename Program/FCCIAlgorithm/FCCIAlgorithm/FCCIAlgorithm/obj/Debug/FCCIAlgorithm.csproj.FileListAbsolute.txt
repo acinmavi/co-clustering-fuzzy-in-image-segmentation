@@ -8,3 +8,8 @@ D:\All\Study\Luan-van\Luan-van\Luan-van\Main-document\Main-with-svn\Program\FCCI
 D:\All\Study\Luan-van\Luan-van\Luan-van\Main-document\Main-with-svn\Program\FCCIAlgorithm\FCCIAlgorithm\FCCIAlgorithm\bin\Debug\FCCIAlgorithm.exe
 D:\All\Study\Luan-van\Luan-van\Luan-van\Main-document\Main-with-svn\Program\FCCIAlgorithm\FCCIAlgorithm\FCCIAlgorithm\bin\Debug\FCCIAlgorithm.pdb
 D:\All\Study\Luan-van\Luan-van\Luan-van\Main-document\Main-with-svn\Program\FCCIAlgorithm\FCCIAlgorithm\FCCIAlgorithm\obj\Debug\FCCIAlgorithm.pdb
+D:\Study\CaoHoc\Luan-van\final\Program\FCCIAlgorithm\FCCIAlgorithm\FCCIAlgorithm\bin\Debug\FCCIAlgorithm.exe
+D:\Study\CaoHoc\Luan-van\final\Program\FCCIAlgorithm\FCCIAlgorithm\FCCIAlgorithm\bin\Debug\FCCIAlgorithm.pdb
+D:\Study\CaoHoc\Luan-van\final\Program\FCCIAlgorithm\FCCIAlgorithm\FCCIAlgorithm\obj\Debug\ResolveAssemblyReference.cache
+D:\Study\CaoHoc\Luan-van\final\Program\FCCIAlgorithm\FCCIAlgorithm\FCCIAlgorithm\obj\Debug\FCCIAlgorithm.exe
+D:\Study\CaoHoc\Luan-van\final\Program\FCCIAlgorithm\FCCIAlgorithm\FCCIAlgorithm\obj\Debug\FCCIAlgorithm.pdb
