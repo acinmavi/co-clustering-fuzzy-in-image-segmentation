@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.IO;
 using System.Text;
 
 namespace FCCIAlgorithm
@@ -29,11 +30,11 @@ namespace FCCIAlgorithm
 			double a = r2 - r1;
 			double b = g2 - g1;
 			double c = b2 - b1;
-    
+			
 			return Math.Sqrt(a*a + b*b + c*c);
 		}
-    
-	
+		
+		
 		/// <summary>
 		/// Gets the "distance" between two colors.
 		/// RGB colors must be normalized (eg. values in [0.0, 1.0]).
@@ -44,8 +45,8 @@ namespace FCCIAlgorithm
 		{
 			return GetColorDistance(color1[0], color1[1], color1[2], color2[0], color2[1], color2[2]);
 		}
-  
-	
+		
+		
 		/// <summary>
 		/// Gets the "distance" between two colors.
 		/// </summary>
@@ -54,16 +55,16 @@ namespace FCCIAlgorithm
 		public static double GetColorDistance(Color c1, Color c2)
 		{
 			double[] rgb1 = new double[]{
-											(double)c1.R/255.0,
-											(double)c1.G/255.0,
-											(double)c1.B/255.0
-										};
+				(double)c1.R/255.0,
+				(double)c1.G/255.0,
+				(double)c1.B/255.0
+			};
 
 			double[] rgb2 = new double[]{
-											(double)c2.R/255.0,
-											(double)c2.G/255.0,
-											(double)c2.B/255.0
-										};
+				(double)c2.R/255.0,
+				(double)c2.G/255.0,
+				(double)c2.B/255.0
+			};
 
 			return GetColorDistance(rgb1[0], rgb1[1], rgb1[2], rgb2[0], rgb2[1], rgb2[2]);
 		}
@@ -134,33 +135,33 @@ namespace FCCIAlgorithm
 			switch(strHex)
 			{
 				case("A"):
-				{
-					return 10;
-				}
+					{
+						return 10;
+					}
 				case("B"):
-				{
-					return 11;
-				}
+					{
+						return 11;
+					}
 				case("C"):
-				{
-					return 12;
-				}
+					{
+						return 12;
+					}
 				case("D"):
-				{
-					return 13;
-				}
+					{
+						return 13;
+					}
 				case("E"):
-				{
-					return 14;
-				}
+					{
+						return 14;
+					}
 				case("F"):
-				{
-					return 15;
-				}
+					{
+						return 15;
+					}
 				default:
-				{
-					return int.Parse(strHex);
-				}
+					{
+						return int.Parse(strHex);
+					}
 			}
 		}
 
@@ -220,17 +221,17 @@ namespace FCCIAlgorithm
 		/// Converts HSB to RGB.
 		/// </summary>
 		/// <param name="hsv">The HSB structure to convert.</param>
-		public static RGB HSBtoRGB(HSB hsb) 
+		public static RGB HSBtoRGB(HSB hsb)
 		{
 			double r = 0;
 			double g = 0;
 			double b = 0;
 
-			if(hsb.Saturation == 0) 
+			if(hsb.Saturation == 0)
 			{
 				r = g = b = hsb.Brightness;
-			} 
-			else 
+			}
+			else
 			{
 				// the color wheel consists of 6 sectors. Figure out which sector you're in.
 				double sectorPos = hsb.Hue / 60.0;
@@ -238,13 +239,13 @@ namespace FCCIAlgorithm
 				// get the fractional part of the sector
 				double fractionalSector = sectorPos - sectorNumber;
 
-				// calculate values for the three axes of the color. 
+				// calculate values for the three axes of the color.
 				double p = hsb.Brightness * (1.0 - hsb.Saturation);
 				double q = hsb.Brightness * (1.0 - (hsb.Saturation * fractionalSector));
 				double t = hsb.Brightness * (1.0 - (hsb.Saturation * (1 - fractionalSector)));
 
 				// assign the fractional colors to r, g, and b based on the sector the angle is in.
-				switch (sectorNumber) 
+				switch (sectorNumber)
 				{
 					case 0:
 						r = hsb.Brightness;
@@ -283,7 +284,7 @@ namespace FCCIAlgorithm
 				Convert.ToInt32( Double.Parse(String.Format("{0:0.00}", r*255.0)) ),
 				Convert.ToInt32( Double.Parse(String.Format("{0:0.00}", g*255.0)) ),
 				Convert.ToInt32( Double.Parse(String.Format("{0:0.00}", b*255.0)) )
-				);
+			);
 		}
 
 		/// <summary>
@@ -292,7 +293,7 @@ namespace FCCIAlgorithm
 		/// <param name="H">Hue value.</param>
 		/// <param name="S">Saturation value.</param>
 		/// <param name="V">Brigthness value.</param>
-		public static RGB HSBtoRGB(double h, double s, double b) 
+		public static RGB HSBtoRGB(double h, double s, double b)
 		{
 			return HSBtoRGB(new HSB(h, s, b));
 		}
@@ -302,31 +303,31 @@ namespace FCCIAlgorithm
 		/// Converts HSB to Color.
 		/// </summary>
 		/// <param name="hsv">the HSB structure to convert.</param>
-		public static Color HSBtoColor(HSB hsb) 
+		public static Color HSBtoColor(HSB hsb)
 		{
 			RGB rgb = HSBtoRGB(hsb);
 
 			return Color.FromArgb(rgb.Red, rgb.Green, rgb.Blue);
 		}
-	
-		/// <summary> 
+		
+		/// <summary>
 		/// Converts HSB to a .net Color.
 		/// </summary>
 		/// <param name="h">Hue value (must be between 0 and 360).</param>
 		/// <param name="s">Saturation value (must be between 0 and 1).</param>
 		/// <param name="b">Brightness value (must be between 0 and 1).</param>
-		public static Color HSBtoColor(double h, double s, double b) 
+		public static Color HSBtoColor(double h, double s, double b)
 		{
 			return HSBtoColor( new HSB(h,s,b) );
-		} 
-  
+		}
+		
 		/// <summary>
 		/// Converts HSB to Color.
 		/// </summary>
 		/// <param name="h">Hue value.</param>
 		/// <param name="s">Saturation value.</param>
 		/// <param name="b">Brightness value.</param>
-		public static Color HSBtoColor(int h,  int s,  int b) 
+		public static Color HSBtoColor(int h,  int s,  int b)
 		{
 			double hue=0,sat=0,val=0;
 
@@ -381,16 +382,16 @@ namespace FCCIAlgorithm
 		/// <param name="h">Hue, must be in [0, 360].</param>
 		/// <param name="s">Saturation, must be in [0, 1].</param>
 		/// <param name="l">Luminance, must be in [0, 1].</param>
-		public static RGB HSLtoRGB(double h, double s, double l) 
+		public static RGB HSLtoRGB(double h, double s, double l)
 		{
 			if(s == 0)
 			{
 				// achromatic color (gray scale)
 				return new RGB(
-					Convert.ToInt32( Double.Parse(String.Format("{0:0.00}", l*255.0)) ), 
-					Convert.ToInt32( Double.Parse(String.Format("{0:0.00}", l*255.0)) ), 
+					Convert.ToInt32( Double.Parse(String.Format("{0:0.00}", l*255.0)) ),
+					Convert.ToInt32( Double.Parse(String.Format("{0:0.00}", l*255.0)) ),
 					Convert.ToInt32( Double.Parse(String.Format("{0:0.00}", l*255.0)) )
-					);
+				);
 			}
 			else
 			{
@@ -424,18 +425,18 @@ namespace FCCIAlgorithm
 				}
 
 				return new RGB(
-					Convert.ToInt32( Double.Parse(String.Format("{0:0.00}", T[0]*255.0)) ), 
-					Convert.ToInt32( Double.Parse(String.Format("{0:0.00}", T[1]*255.0)) ), 
+					Convert.ToInt32( Double.Parse(String.Format("{0:0.00}", T[0]*255.0)) ),
+					Convert.ToInt32( Double.Parse(String.Format("{0:0.00}", T[1]*255.0)) ),
 					Convert.ToInt32( Double.Parse(String.Format("{0:0.00}", T[2]*255.0)) )
-					);
+				);
 			}
 		}
-	
+		
 		/// <summary>
 		/// Converts HSL to RGB.
 		/// </summary>
 		/// <param name="hsl">The HSL structure to convert.</param>
-		public static RGB HSLtoRGB(HSL hsl) 
+		public static RGB HSLtoRGB(HSL hsl)
 		{
 			return HSLtoRGB(hsl.Hue, hsl.Saturation, hsl.Luminance);
 		}
@@ -445,7 +446,7 @@ namespace FCCIAlgorithm
 		/// Converts HSL to .net Color.
 		/// </summary>
 		/// <param name="hsl">The HSL structure to convert.</param>
-		public static Color HSLtoColor(double h, double s, double l) 
+		public static Color HSLtoColor(double h, double s, double l)
 		{
 			RGB rgb = HSLtoRGB(h, s, l);
 
@@ -456,7 +457,7 @@ namespace FCCIAlgorithm
 		/// Converts HSL to .net Color.
 		/// </summary>
 		/// <param name="hsl">The HSL structure to convert.</param>
-		public static Color HSLtoColor(HSL hsl) 
+		public static Color HSLtoColor(HSL hsl)
 		{
 			return HSLtoColor(hsl.Hue, hsl.Saturation, hsl.Luminance);
 		}
@@ -495,13 +496,13 @@ namespace FCCIAlgorithm
 		#endregion
 
 		#region RGB convert
-		/// <summary> 
+		/// <summary>
 		/// Converts RGB to HSL.
 		/// </summary>
 		/// <param name="red">Red value, must be in [0,255].</param>
 		/// <param name="green">Green value, must be in [0,255].</param>
 		/// <param name="blue">Blue value, must be in [0,255].</param>
-		public static HSL RGBtoHSL(int red, int green, int blue) 
+		public static HSL RGBtoHSL(int red, int green, int blue)
 		{
 			double h=0, s=0, l=0;
 
@@ -556,10 +557,10 @@ namespace FCCIAlgorithm
 				Double.Parse(String.Format("{0:0.##}", h)),
 				Double.Parse(String.Format("{0:0.##}", s)),
 				Double.Parse(String.Format("{0:0.##}", l))
-				); 
-		} 
+			);
+		}
 
-		/// <summary> 
+		/// <summary>
 		/// Converts RGB to HSL.
 		/// </summary>
 		public static HSL RGBtoHSL(RGB rgb)
@@ -567,7 +568,7 @@ namespace FCCIAlgorithm
 			return RGBtoHSL(rgb.Red, rgb.Green, rgb.Blue);
 		}
 
-		/// <summary> 
+		/// <summary>
 		/// Converts Color to HSL.
 		/// </summary>
 		public static HSL RGBtoHSL(Color c)
@@ -576,11 +577,11 @@ namespace FCCIAlgorithm
 		}
 
 		
-		/// <summary> 
+		/// <summary>
 		/// Converts RGB to HSB.
-		/// </summary> 
-		public static HSB RGBtoHSB(int red, int green, int blue) 
-		{ 
+		/// </summary>
+		public static HSB RGBtoHSB(int red, int green, int blue)
+		{
 			double r = ((double)red/255.0);
 			double g = ((double)green/255.0);
 			double b = ((double)blue/255.0);
@@ -610,21 +611,21 @@ namespace FCCIAlgorithm
 			double s = (max == 0)? 0.0 : (1.0-((double)min/(double)max));
 
 			return new HSB(h, s, (double)max);
-		} 
+		}
 
-		/// <summary> 
+		/// <summary>
 		/// Converts RGB to HSB.
-		/// </summary> 
-		public static HSB RGBtoHSB(RGB rgb) 
-		{ 
+		/// </summary>
+		public static HSB RGBtoHSB(RGB rgb)
+		{
 			return RGBtoHSB(rgb.Red, rgb.Green, rgb.Blue);
-		} 
+		}
 		
-		/// <summary> 
+		/// <summary>
 		/// Converts RGB to HSB.
-		/// </summary> 
+		/// </summary>
 		public static HSB RGBtoHSB(Color c)
-		{ 
+		{
 			return RGBtoHSB(c.R, c.G, c.B);
 		}
 
@@ -691,7 +692,7 @@ namespace FCCIAlgorithm
 
 			return yuv;
 		}
-			
+		
 		/// <summary>
 		/// Converts RGB to YUV.
 		/// </summary>
@@ -715,7 +716,7 @@ namespace FCCIAlgorithm
 		/// <param name="green">Green must be in [0, 255].</param>
 		/// <param name="blue">Blue must be in [0, 255].</param>
 		public static CIEXYZ RGBtoXYZ(int red, int green, int blue)
-		{		
+		{
 			// normalize red, green, blue values
 			double rLinear = (double)red/255.0;
 			double gLinear = (double)green/255.0;
@@ -731,7 +732,7 @@ namespace FCCIAlgorithm
 				(r*0.4124 + g*0.3576 + b*0.1805),
 				(r*0.2126 + g*0.7152 + b*0.0722),
 				(r*0.0193 + g*0.1192 + b*0.9505)
-				);
+			);
 		}
 		/// <summary>
 		/// Converts RGB to CIEXYZ.
@@ -798,7 +799,7 @@ namespace FCCIAlgorithm
 		public static Color CMYKtoColor(double c, double m, double y, double k)
 		{
 			return CMYKtoColor(new CMYK(c,m,y,k));
-		}		
+		}
 		
 		/// <summary>
 		/// Converts CMYK to RGB.
@@ -889,7 +890,7 @@ namespace FCCIAlgorithm
 
 			return rgb;
 		}
-			
+		
 		/// <summary>
 		/// Converts YUV to RGB.
 		/// </summary>
@@ -911,7 +912,7 @@ namespace FCCIAlgorithm
 
 			return Color.FromArgb(rgb.Red, rgb.Green, rgb.Blue);
 		}
-			
+		
 		/// <summary>
 		/// Converts YUV to a .net Color.
 		/// </summary>
@@ -981,10 +982,10 @@ namespace FCCIAlgorithm
 			}
 
 			return new RGB(
-				Convert.ToInt32( Double.Parse(String.Format("{0:0.00}", Clinear[0]*255.0)) ), 
-				Convert.ToInt32( Double.Parse(String.Format("{0:0.00}", Clinear[1]*255.0)) ), 
+				Convert.ToInt32( Double.Parse(String.Format("{0:0.00}", Clinear[0]*255.0)) ),
+				Convert.ToInt32( Double.Parse(String.Format("{0:0.00}", Clinear[1]*255.0)) ),
 				Convert.ToInt32( Double.Parse(String.Format("{0:0.00}", Clinear[2]*255.0)) )
-				);
+			);
 		}
 
 		/// <summary>
@@ -1047,7 +1048,7 @@ namespace FCCIAlgorithm
 				(fx > theta)? CIEXYZ.D65.X * (fx*fx*fx) : (fx - 16.0/116.0)*3*(theta*theta)*CIEXYZ.D65.X,
 				(fy > theta)? CIEXYZ.D65.Y * (fy*fy*fy) : (fy - 16.0/116.0)*3*(theta*theta)*CIEXYZ.D65.Y,
 				(fz > theta)? CIEXYZ.D65.Z * (fz*fz*fz) : (fz - 16.0/116.0)*3*(theta*theta)*CIEXYZ.D65.Z
-				);
+			);
 		}
 
 		/// <summary>
@@ -1078,19 +1079,22 @@ namespace FCCIAlgorithm
 		#endregion
 
 		
-		public static double[,] get2dDataArrayFromImage(string imageFilePath)
+		public static double[,] get2dDataArrayFromImage(string imageFilePath,out List<CIELab> lsCeiLab)
 		{
 			Bitmap img = (Bitmap) Image.FromFile(imageFilePath);
 			Color pixelColor;
 			CIELab ceiLab;
 			//get ceilab from rgb
-			List<CIELab> lsCeiLab = new List<CIELab>();
+//			List<CIELab> lsCeiLab = new List<CIELab>();
+			lsCeiLab = new List<CIELab>();
 			double[,] array2D = new double[img.Width*img.Height,2];
 			for (int i = 0; i < img.Width; i++) {
 				for (int j = 0; j < img.Height; j++) {
-					 pixelColor = img.GetPixel(i, j);
-					 ceiLab = RGBtoLab(pixelColor);
-					 lsCeiLab.Add(ceiLab);
+					pixelColor = img.GetPixel(i, j);
+					ceiLab = RGBtoLab(pixelColor);
+					ceiLab.iWidth = i;
+					ceiLab.iHeight = j;
+					lsCeiLab.Add(ceiLab);
 				}
 			}
 			
@@ -1100,7 +1104,26 @@ namespace FCCIAlgorithm
 			}
 			Console.WriteLine(array2D.GetLength(0));
 			Console.WriteLine(array2D.GetLength(1));
+			
+//			string fileOut = "cluster-cat.jpg";
+//			ColorSpaceHelper.saveCIELabsToImage(lsCeiLab,fileOut,img.Width,img.Height);
+			
 			return array2D;
+		}
+		
+		public static void saveCIELabsToImage(List<CIELab> ceilabs,String fileName,int width,int height){
+			try {
+				Bitmap bitmap = new Bitmap(width,height, PixelFormat.Format32bppRgb);
+				foreach (var element in ceilabs) {
+					RGB rgb = LabtoRGB(element);
+					bitmap.SetPixel(element.iWidth,element.iHeight,Color.FromArgb(0,rgb.Red,rgb.Green,rgb.Blue));
+				}
+				string filePath = Path.Combine(Environment.CurrentDirectory,fileName);
+				bitmap.Save(filePath);
+			} catch (Exception e) {
+				Console.WriteLine(e.ToString());
+			}
+			
 		}
 	}
 }

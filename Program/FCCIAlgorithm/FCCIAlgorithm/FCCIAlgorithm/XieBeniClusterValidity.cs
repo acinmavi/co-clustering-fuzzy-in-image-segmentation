@@ -25,24 +25,25 @@ namespace FCCIAlgorithm
 			double xigma = 0;
 			double xigmaCompare = 0;
 			for (int c = 0; c < C; c++) {
+				xigmaCompare = 0;
 				for (int i = 0; i < N; i++) {
 					double totalXp = 0;
 					for (int j = 0; j < K; j++) {
 						totalXp+=Math.Pow((x[i,j]-P[c,j]),2);
 					}
-					xigmaCompare = U[c,i]*U[c,i]*totalXp;
-					if(xigmaCompare > xigma ) xigma = xigmaCompare;
+					xigmaCompare += U[c,i]*U[c,i]*totalXp;
 				}
+				if(xigmaCompare > xigma ) xigma = xigmaCompare;
 			}
 			
-			double dmin = 100;
+			double dmin = double.MaxValue;
 			for (int c = 0; c < C; c++) {
 				double dminCompare = 0;
 				for (int j = 0; j < K; j++) {
 					if((c+1)<C){
-						dminCompare+=Math.Pow(P[c+1,j]-P[c,j],2);
+						dminCompare+=Math.Pow((P[c+1,j]-P[c,j]),2);
 					}else{
-						dminCompare+=Math.Pow(P[0,j]-P[c,j],2);
+						dminCompare+=Math.Pow((P[0,j]-P[c,j]),2);
 					}
 				}
 				if(dminCompare < dmin ){
