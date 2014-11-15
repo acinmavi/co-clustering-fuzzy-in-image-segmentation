@@ -1078,52 +1078,5 @@ namespace FCCIAlgorithm
 		
 		#endregion
 
-		
-		public static double[,] get2dDataArrayFromImage(string imageFilePath,out List<CIELab> lsCeiLab)
-		{
-			Bitmap img = (Bitmap) Image.FromFile(imageFilePath);
-			Color pixelColor;
-			CIELab ceiLab;
-			//get ceilab from rgb
-//			List<CIELab> lsCeiLab = new List<CIELab>();
-			lsCeiLab = new List<CIELab>();
-			double[,] array2D = new double[img.Width*img.Height,2];
-			for (int i = 0; i < img.Width; i++) {
-				for (int j = 0; j < img.Height; j++) {
-					pixelColor = img.GetPixel(i, j);
-					ceiLab = RGBtoLab(pixelColor);
-					ceiLab.iWidth = i;
-					ceiLab.iHeight = j;
-					lsCeiLab.Add(ceiLab);
-				}
-			}
-			
-			for (int i = 0; i < lsCeiLab.Count; i++) {
-				array2D[i,0] = lsCeiLab[i].A;
-				array2D[i,1] = lsCeiLab[i].B;
-			}
-			Console.WriteLine(array2D.GetLength(0));
-			Console.WriteLine(array2D.GetLength(1));
-			
-//			string fileOut = "cluster-cat.jpg";
-//			ColorSpaceHelper.saveCIELabsToImage(lsCeiLab,fileOut,img.Width,img.Height);
-			
-			return array2D;
-		}
-		
-		public static void saveCIELabsToImage(List<CIELab> ceilabs,String fileName,int width,int height){
-			try {
-				Bitmap bitmap = new Bitmap(width,height, PixelFormat.Format32bppRgb);
-				foreach (var element in ceilabs) {
-					RGB rgb = LabtoRGB(element);
-					bitmap.SetPixel(element.iWidth,element.iHeight,Color.FromArgb(0,rgb.Red,rgb.Green,rgb.Blue));
-				}
-				string filePath = Path.Combine(Environment.CurrentDirectory,fileName);
-				bitmap.Save(filePath);
-			} catch (Exception e) {
-				Console.WriteLine(e.ToString());
-			}
-			
-		}
 	}
 }
