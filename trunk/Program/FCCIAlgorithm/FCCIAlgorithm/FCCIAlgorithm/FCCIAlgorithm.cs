@@ -7,6 +7,7 @@
  * To change this template use Tools | Options | Coding | Edit Standard Headers.
  */
 using System;
+using System.Collections.Generic;
 
 namespace FCCIAlgorithm
 {
@@ -19,7 +20,7 @@ namespace FCCIAlgorithm
 		{
 		}
 		
-		public static void runAlgorithm(double Tu,double Tv,double eps,int maxIter,int C,int K,int N,double[,] x){
+		public static double runAlgorithm(double Tu,double Tv,double eps,int maxIter,int C,int K,int N,double[,] x,List<CIELab> lsCeiLab,bool writeFinalResult = false){
 			Random random = new Random();
 			double[,] U = new double[C,N];
 			double[,] P = new double[C,K];
@@ -60,14 +61,6 @@ namespace FCCIAlgorithm
 //			}
 //			Console.WriteLine();
 			int count = 0;
-			//save preU
-			for (int i = 0; i < N; i++) {
-				for (int c = 0; c < C; c++) {
-					preU[c,i] = U[c,i];
-				}
-			}
-			
-			
 			while(true){
 				//save preU
 				for (int i = 0; i < N; i++) {
@@ -84,9 +77,6 @@ namespace FCCIAlgorithm
 						for (int i = 0; i < N; i++) {
 							down+=U[c,i];
 							up+=U[c,i]*x[i,j];
-							if(up<0 || down < 0){
-							Console.WriteLine("aaaaa");	
-							}
 						}
 						P[c,j] = up/down;
 					}
@@ -148,7 +138,7 @@ namespace FCCIAlgorithm
 					totalUk=0;
 				}
 //				double totalUkCheck = 0;
-//				
+//
 //				for (int i = 0;i < N; i++) {
 //					for (int c = 0; c < C; c++) {
 //						totalUkCheck +=U[c,i];
@@ -183,17 +173,48 @@ namespace FCCIAlgorithm
 					break;
 				}
 			}
-			Console.WriteLine("=====================================");
-			Console.WriteLine("Final Uci(C,N) : ") ;
-			printMatrix(U);
-			Console.WriteLine();
-			Console.WriteLine("=====================================");
-			Console.WriteLine("Final Pcj (C,K) : ") ;
-			printMatrix(P);
+//			if(writeFinalResult){
+//				Console.WriteLine("=====================================");
+//				Console.WriteLine("Final Uci(C,N) : ") ;
+//				printMatrix(U);
+//				Console.WriteLine();
+//				Console.WriteLine("=====================================");
+//				Console.WriteLine("Final Pcj (C,K) : ") ;
+//				printMatrix(P);
 			
+			//time to defuzzy
+			//save index : this value decide point i(i=0:n-1) belong to what cluster (c=0:C-1)
+			int[] index = new int[N];
+			for (int i = 0; i < N; i++) {
+				double maxValue = 0;
+				int clusterIndex = 0;
+				for (int c = 0; c < C; c++) {
+					if(maxValue<U[c,i])
+					{
+						maxValue = U[c,i];
+						clusterIndex = c;
+					}
+				}
+//					Console.WriteLine("point " + i + " belong to cluster " + clusterIndex + " - value of maxUci = " + maxValue);
+				index[i] = clusterIndex;
+			}
 			
-			double Snew = XieBeniClusterValidity.runValidity(U,x,P,C,K,N);
-			Console.WriteLine("Snew after validity : " +  Snew);
+			//
+			for (int i = 0; i < N; i++) {
+				int cluster = index[i];
+				CIELab ceilab = lsCeiLab[i];
+				ceilab.A = P[cluster,0];
+				ceilab.B = P[cluster,1];
+				lsCeiLab[i]=ceilab;
+			}
+			
+//				return 0;
+//			}else
+			{
+				double Snew = XieBeniClusterValidity.runValidity(U,x,P,C,K,N);
+				Console.WriteLine("Snew after validity : " +  Snew);
+				return Snew;
+			}
 		}
 		
 		public static void printMatrix(double[,] arr){

@@ -17,7 +17,10 @@ namespace FCCIAlgorithm
 		private double l;
 		private double a;
 		private double b;
-
+		
+		public int iWidth { get; set; }
+		
+		public int iHeight { get; set; }
 		#endregion
 
 		#region Operators
@@ -89,13 +92,8 @@ namespace FCCIAlgorithm
 
 		#endregion
 
-		public CIELab(double l, double a, double b) 
-		{
-			this.l = l;
-			this.a = a;
-			this.b = b;
-		}
-
+		
+		
 		#region Methods
 		public override bool Equals(Object obj) 
 		{
@@ -107,6 +105,23 @@ namespace FCCIAlgorithm
 		public override int GetHashCode() 
 		{
 			return L.GetHashCode() ^ a.GetHashCode() ^ b.GetHashCode();
+		}
+	
+		public CIELab clone()
+		{
+			CIELab clone = new CIELab();
+			clone.A = A;
+			clone.B = B;
+			clone.L=L;
+			clone.iHeight = iHeight;
+			clone.iWidth = iWidth;
+			return clone;
+		}
+		
+		
+		public override string ToString()
+		{
+			return string.Format("[CIELab L={0}, A={1}, B={2}, IWidth={3}, IHeight={4}]", l, a, b, iWidth, iHeight);
 		}
 
 		#endregion
